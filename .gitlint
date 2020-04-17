@@ -67,7 +67,6 @@ warn-line-length=72
 [title-max-length-custom]
 line-length=65
 warn-line-length=50
-warn-line-length=1
 
 [body-min-length]
 min-length=5
