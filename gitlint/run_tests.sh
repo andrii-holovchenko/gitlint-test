@@ -49,7 +49,7 @@ handle_test_result(){
     fi
     # Print RESULT if not empty
     if [ -n "$RESULT" ] ; then
-        echo -e "\n$RESULT"
+        echo -e "\n{RED}$RESULT"
     fi
     # Reset color
     echo -e "${NO_COLOR}"
