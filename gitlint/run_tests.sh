@@ -24,24 +24,16 @@ BLUE="\033[94m"
 GREEN="\033[32m"
 NO_COLOR="\033[0m"
 
-echo "ghprbActualCommit $ghprbActualCommit"
-echo "ghprbActualCommitAuthor $ghprbActualCommitAuthor"
-echo "ghprbActualCommitAuthorEmail $ghprbActualCommitAuthorEmail"
-echo "ghprbPullDescription $ghprbPullDescription"
-echo "ghprbPullId $ghprbPullId"
-echo "ghprbPullLink $ghprbPullLink"
-echo "ghprbPullTitle $ghprbPullTitle"
-echo "ghprbSourceBranch $ghprbSourceBranch"
-echo "ghprbTargetBranch $ghprbTargetBranch"
-echo "ghprbCommentBody $ghprbCommentBody"
-echo "sha1 $sha1"
-
 run_git_check(){
-    echo -ne "Running gitlint...${RED}"
-    RESULT=$(gitlint 2>&1)
-    local exit_code=$?
-    handle_test_result $exit_code "$RESULT"
-    # FUTURE: check if we use str() function: egrep -nriI "( |\(|\[)+str\(" gitlint | egrep -v "\w*#(.*)"
+    echo -ne "Running gitlint...\n" #${RED}"
+    local exit_code=0
+    for commit_sha in $(git log --pretty=%H $(git merge-base origin/${ghprbTargetBranch:-master} HEAD)..HEAD); do
+	echo "Checking commit message ${commit_sha}"
+        RESULT=`git log -1 --pretty=%B ${commit} | gitlint 2>&1`
+    	exit_code=$((exit_code + $?))
+	handle_test_result $exit_code "$RESULT"
+	# FUTURE: check if we use str() function: egrep -nriI "( |\(|\[)+str\(" gitlint | egrep -v "\w*#(.*)"
+    done
     return $exit_code
 }
 
