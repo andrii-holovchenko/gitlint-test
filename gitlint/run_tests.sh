@@ -25,16 +25,17 @@ GREEN="\033[32m"
 NO_COLOR="\033[0m"
 
 run_git_check(){
-    echo -ne "Running gitlint...\n" #${RED}"
-    local exit_code=0
+    echo -ne "Running gitlint...\n"
+    local ret_code=0
     for commit_sha in $(git log --pretty=%H $(git merge-base origin/${ghprbTargetBranch:-master} HEAD)..HEAD); do
 	echo "Checking commit message ${commit_sha}"
-        RESULT=`git log -1 --pretty=%B ${commit} | gitlint 2>&1`
-    	exit_code=$((exit_code + $?))
+        RESULT=`git log -1 --pretty=%B ${commit_sha} | gitlint 2>&1`
+    	local exit_code=$?
+        ret_code=$((ret_code + $exit_code))
 	handle_test_result $exit_code "$RESULT"
 	# FUTURE: check if we use str() function: egrep -nriI "( |\(|\[)+str\(" gitlint | egrep -v "\w*#(.*)"
     done
-    return $exit_code
+    return $ret_code
 }
 
 handle_test_result(){
